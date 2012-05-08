@@ -27,14 +27,20 @@ FAILURE LOGS
 SUCCESS LOGS
 ASSOCIATED IPs
 	192.168.1.118
+	68.12.232.12
 COMMANDS
 	/usr/bin/unlink /usr/bin/python
 	/usr/bin/vim /var/log/auth.log
 
-#:./logalyzer.py -u bryan -i
+#:./logalyzer.py -l /var/log/auth.log.2 -u bryan -i
 LOGGED IPS FOR USER 'bryan'
 	192.168.1.118
 	68.12.232.12
+
+#:./logalyzer.py -l /var/log/auth.log.2 -u
+david
+bryan
+test
 </pre>
 
 You can parse addresses/commands/failures per user or in general.  
