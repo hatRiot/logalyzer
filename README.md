@@ -32,7 +32,7 @@ COMMANDS
 	/usr/bin/vim /var/log/auth.log
 
 #:./logalyzer.py -u bryan -i
-LOGGED IPS FOR USER '%s'
+LOGGED IPS FOR USER 'bryan'
 	192.168.1.118
 	68.12.232.12
 </pre>
