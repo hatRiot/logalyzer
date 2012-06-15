@@ -80,39 +80,39 @@ if __name__=="__main__":
 
 	# output user-specific commands
 	if options.commands and options.user:
-		print "COMMANDS FOR USER \'%s\'"%options.user
+		print "[+] Commands for user \'%s\'"%options.user
 		for com in LOGS[options.user].commands:
 			print "\t",com
 
 	# output user-specific failures
 	elif options.fail and options.user:
-		print "FAILURES FOR USER \'%s\'"%options.user
+		print "[+] Failures for user \'%s\'"%options.user
 		for fail in LOGS[options.user].fail_logs:
 			print "\t",fail
 
 	# output user-specific ip addresses 
 	elif options.ip and options.user:
-		print "LOGGED IPS FOR USER \'%s\'"%options.user
+		print "[+] Logged IPs for user \'%s\'"%options.user
 		for i in LOGS[options.user].ips:
 			print "\t", i
 
 	# print out all information regarding specified user
 	elif options.user is not None:
 		print "[+] Logs associated with user \'%s\'"%options.user
-		print "FAILURE LOGS"
+		print "[!] Failure Logs"
 		for fail in LOGS[options.user].fail_logs:
 			print "\t", fail
-		print "SUCCESS LOGS"
+		print "[!] Success Logs"
 		for succ in LOGS[options.user].succ_logs:
 			print "\t", succ
-		print "ASSOCIATED IPs"
+		print "[!] Associated IPs"
 		for ip in LOGS[options.user].ips:
 			print "\t", ip
-		print "COMMANDS"
+		print "[!] Commands"
 		for comm in LOGS[options.user].commands:
 			print "\t", comm
 		if options.fullu:
-			print "FULL LOG"
+			print "[!] Full Log"
 			for log in LOGS[options.user].logs:
 				print log
 	

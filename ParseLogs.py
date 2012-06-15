@@ -98,7 +98,7 @@ def ParseLogs(LOG):
 				# parse a fail log to ssh
 				if "(sshd:auth)" in line:
 					# ssh doesn't have a logname hurr
-					usr = ParseUser(line)
+					usr = ParseUsr(line)
 					if not usr in logs:
 						logs[usr] = Log(usr)
 					logs[usr].ips.append(ParseIP(line))
