@@ -33,6 +33,7 @@ if __name__=="__main__":
 								default=False, dest="fullu") 
 	parser.add_option("-l", help="Specify log file.  Default is auth.log", default=None, dest="log")
 	parser.add_option("-f", help="List failures", action="store_true", default=False, dest="fail")
+	parser.add_option("-s", help="List success logs", action="store_true", default=False, dest="success")
 	parser.add_option("-c", help="List commands by user", action="store_true", default=False, dest="commands")
 	parser.add_option("-i", help="List IP Addresses", action="store_true", default=False, dest="ip")
 
@@ -56,7 +57,7 @@ if __name__=="__main__":
 		if not options.user in LOGS:
 			print "[-] User \'%s\' is not present in the logs."%options.user
 			sys.exit(1)
-	
+
 	# output all commands
 	if options.commands and not options.user:
 		for i in LOGS:
@@ -83,6 +84,12 @@ if __name__=="__main__":
 		print "[+] Commands for user \'%s\'"%options.user
 		for com in LOGS[options.user].commands:
 			print "\t",com
+	
+	# output user-specific success logs
+	elif options.success and options.user:
+		print "[+] Successes logs for user \'%s\'"%options.user
+		for log in LOGS[options.user].succ_logs:
+			print "\t",log
 
 	# output user-specific failures
 	elif options.fail and options.user:
@@ -98,7 +105,9 @@ if __name__=="__main__":
 
 	# print out all information regarding specified user
 	elif options.user is not None:
-		print "[+] Logs associated with user \'%s\'"%options.user
+		print "[!] Logs associated with user \'%s\'"%options.user
+		print '[+] First log: ', LOGS[options.user].first_date()
+		print '[+] Last log: ', LOGS[options.user].last_date()
 		print "[!] Failure Logs"
 		for fail in LOGS[options.user].fail_logs:
 			print "\t", fail
@@ -111,12 +120,16 @@ if __name__=="__main__":
 		print "[!] Commands"
 		for comm in LOGS[options.user].commands:
 			print "\t", comm
-		if options.fullu:
-			print "[!] Full Log"
-			for log in LOGS[options.user].logs:
-				print log
-	
+
+	# dump the full log for the user if specified
+	if options.fullu and options.user:
+		print "[!] Full Log"
+		for log in LOGS[options.user].logs:
+			print log
+
 	# if they supplied us with an empty user, dump all of the logged users
 	elif options.user is None:
-		for i in LOGS:
-			print i
+		if len(LOGS) > 0:
+			print '[+] Log file: ', log 
+			for i in LOGS:
+				print i

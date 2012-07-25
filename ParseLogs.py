@@ -9,6 +9,21 @@ import re
 # Stuck into a dictionary by user:Log, where log houses
 # logs, fails, successes, logged IPs, and commands used
 class Log:
+	# dump date of first log
+	def first_date(self):
+		if len(self.logs) > 0:
+			date = None
+			i = 0
+			# sometimes the first few aren't right, so look
+			# until we find one
+			while i < len(self.logs) and date is None:
+				date = ParseDate(self.logs[i])
+				i += 1
+			return date
+	# dump date of last log
+	def last_date(self):
+		if len(self.logs) > 0:
+			return ParseDate(self.logs[len(self.logs) - 1])
 	def __init__(self, usr):
 		self.usr = usr
 		self.logs = []
@@ -38,14 +53,14 @@ def ParseIP(line):
 
 # parse a date from the line
 def ParseDate(line):
-	date = re.search(r'^[A-Za-z]{3}\s[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}', line)
+	date = re.search(r'^[A-Za-z]{3}\s*[0-9]{1,2}\s[0-9]{1,2}:[0-9]{2}:[0-9]{2}', line)
 	if date is not None:
 		return date.group(0)
 
 # parse a command from a line
 def ParseCmd(line):
 	# parse command to end of line 
-	cmd = re.search(r'(\bCOMMAND=)([a-zA-Z./\s+]+)', line)
+	cmd = re.search(r'(\bCOMMAND=)(.+?$)', line)
 	if cmd is not None:
 		return cmd.group(2)
 
@@ -106,7 +121,6 @@ def ParseLogs(LOG):
 				else:	
 					if not usr in logs:
 						logs[usr] = Log(usr)
-
 				logs[usr].fail_logs.append(line.rstrip('\n'))
 				logs[usr].logs.append(line.rstrip('\n'))
 
