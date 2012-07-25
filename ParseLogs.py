@@ -34,6 +34,7 @@ class Log:
 
 # parse user from various lines
 def ParseUsr(line):
+	usr = None
 	if "Accepted password" in line:
 		usr = re.search(r'(\bfor\s)(\w+)', line)
 	elif "sudo:" in line:
