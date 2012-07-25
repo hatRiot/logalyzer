@@ -57,6 +57,9 @@ if __name__=="__main__":
 		if not options.user in LOGS:
 			print "[-] User \'%s\' is not present in the logs."%options.user
 			sys.exit(1)
+	
+	# tag log location first
+	print '[!] Log file: ', log 
 
 	# output all commands
 	if options.commands and not options.user:
@@ -130,6 +133,5 @@ if __name__=="__main__":
 	# if they supplied us with an empty user, dump all of the logged users
 	elif options.user is None:
 		if len(LOGS) > 0:
-			print '[+] Log file: ', log 
 			for i in LOGS:
 				print i

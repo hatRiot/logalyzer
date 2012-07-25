@@ -6,7 +6,7 @@ Logalyzer is a script I wrote to make looking through the auth logs neater.  It 
 Some examples:
 
 <pre>
-#:./logalyzer.py -h 
+# python logalyzer.py -h
 Usage: logalyzer.py [options]
 
 Options:
@@ -15,32 +15,30 @@ Options:
   --full      Full log dump for specified user
   -l LOG      Specify log file.  Default is auth.log
   -f          List failures
+  -s          List success logs
   -c          List commands by user
   -i          List IP Addresses
 
-  Combine flags to view user-specific information.  '-u test -i' lists IP
-  addresses associated with user test
+Combine flags to view user-specific information.  '-u test -i' lists IP
+addresses associated with user test
 
-#:./logalyzer.py -u bryan
-[+] Logs associated with user 'bryan'
-FAILURE LOGS
-SUCCESS LOGS
-ASSOCIATED IPs
-	192.168.1.118
-	68.12.232.12
-COMMANDS
-	/usr/bin/unlink /usr/bin/python
-	/usr/bin/vim /var/log/auth.log
+# sudo python logalyzer.py -u bryan
+[!] Log file:  /var/log/auth.log
+[!] Logs associated with user 'bryan'
+[+] First log:  Jul 24 21:26:09
+[+] Last log:  Jul 24 23:38:26
+[!] Failure Logs
+[!] Success Logs
+[!] Associated IPs
+    192.168.1.118
+[!] Commands
+	/usr/bin/apt-get dist-upgrade
+	/usr/local/bin/python logalyzer.py -l /var/log/auth.log.1 -u bryan
+	/usr/local/bin/python logalyzer.py -u bryan -l /var/log/auth.log.1 -s
 
-#:./logalyzer.py -l /var/log/auth.log.2 -u bryan -i
-LOGGED IPS FOR USER 'bryan'
-	192.168.1.118
-	68.12.232.12
-
-#:./logalyzer.py -l /var/log/auth.log.2 -u
-david
-bryan
-test
+# python logalyzer.py -l /var/log/auth.log.1 -u bryan -c
+[!] Log file:  /var/log/auth.log.1
+[+] Commands for user 'bryan'
+	/usr/bin/apt-get update
+	/usr/bin/apt-get dist-upgrade
 </pre>
-
-You can parse addresses/commands/failures per user or in general.  
