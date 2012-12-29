@@ -1,4 +1,5 @@
 import re
+import gzip
 
 #
 # ParseLogs.py
@@ -69,73 +70,80 @@ def ParseCmd(line):
 def ParseLogs(LOG):
 	# initialize the dictionary
 	logs = {}
+
 	# parse the log
-	with open(LOG, 'r') as log:
-		# iterate through the logs
-		for line in log:
-			# match a login
-			if "Accepted password for" in line:
-				usr = ParseUsr(line)
-				
-				# add 'em if they don't exist
-				if not usr in logs:
-					logs[usr] = Log(usr)
-				
-				ip = ParseIP(line)
-				# set info
-				if not ip in logs[usr].ips:
-					logs[usr].ips.append(ip)
-				logs[usr].succ_logs.append(line.rstrip('\n'))
-				logs[usr].logs.append(line.rstrip('\n'))
+	f = None
+	try:
+		f = gzip.open(LOG, 'r') if '.gz' in LOG else open(LOG, 'r')
+		log = f.read()
+	except Exception, e:
+		print '[-] Error opening \'%s\': %s'%(LOG,e)
+		return None
+	finally:
+		f.close()
 
-			# match a failed login
-			elif "Failed password for" in line:
-				# parse user
-				usr = ParseUsr(line)
-
-				if not usr in logs:
-					logs[usr] = Log(usr)
-				
-				ip = ParseIP(line)
-
-				if not ip in logs[usr].ips:
-					logs[usr].ips.append(ip)
-				logs[usr].fail_logs.append(line.rstrip('\n'))
-				logs[usr].logs.append(line.rstrip('\n'))
+	for line in log.split('\n'):
+		# match a login
+		if "Accepted password for" in line:
+			usr = ParseUsr(line)
 			
-			# match failed auth
-			elif ":auth): authentication failure;" in line:
-				# so there are three flavors of authfail we care about;
-				# su, sudo, and ssh.  Lets parse each.
-				usr = re.search(r'(\blogname=)(\w+)', line)
-				if usr is not None:
-					usr = usr.group(2)
+			# add 'em if they don't exist
+			if not usr in logs:
+				logs[usr] = Log(usr)
+			
+			ip = ParseIP(line)
+			# set info
+			if not ip in logs[usr].ips:
+				logs[usr].ips.append(ip)
+			logs[usr].succ_logs.append(line.rstrip('\n'))
+			logs[usr].logs.append(line.rstrip('\n'))
 
-				# parse a fail log to ssh
-				if "(sshd:auth)" in line:
-					# ssh doesn't have a logname hurr
-					usr = ParseUsr(line)
-					if not usr in logs:
-						logs[usr] = Log(usr)
-					logs[usr].ips.append(ParseIP(line))
-				# parse sudo/su fails
-				else:	
-					if not usr in logs:
-						logs[usr] = Log(usr)
-				logs[usr].fail_logs.append(line.rstrip('\n'))
-				logs[usr].logs.append(line.rstrip('\n'))
+		# match a failed login
+		elif "Failed password for" in line:
+			# parse user
+			usr = ParseUsr(line)
 
-			# match commands
-			elif "sudo:" in line:
-				# parse user
+			if not usr in logs:
+				logs[usr] = Log(usr)
+				
+			ip = ParseIP(line)
+
+			if not ip in logs[usr].ips:
+				logs[usr].ips.append(ip)
+			logs[usr].fail_logs.append(line.rstrip('\n'))
+			logs[usr].logs.append(line.rstrip('\n'))
+			
+		# match failed auth
+		elif ":auth): authentication failure;" in line:
+			# so there are three flavors of authfail we care about;
+			# su, sudo, and ssh.  Lets parse each.
+			usr = re.search(r'(\blogname=)(\w+)', line)
+			if usr is not None:
+				usr = usr.group(2)
+			# parse a fail log to ssh
+			if "(sshd:auth)" in line:
+				# ssh doesn't have a logname hurr
 				usr = ParseUsr(line)
 				if not usr in logs:
 					logs[usr] = Log(usr)
-		
-				cmd = ParseCmd(line)
-				# append the command if it isn't there already
-				if cmd is not None:
-					if not cmd in logs[usr].commands:
-						logs[usr].commands.append(cmd)
-				logs[usr].logs.append(line.rstrip('\n'))
+				logs[usr].ips.append(ParseIP(line))
+			# parse sudo/su fails
+			else:	
+				if not usr in logs:
+					logs[usr] = Log(usr)
+			logs[usr].fail_logs.append(line.rstrip('\n'))
+			logs[usr].logs.append(line.rstrip('\n'))
+			# match commands
+		elif "sudo:" in line:
+			# parse user
+			usr = ParseUsr(line)
+			if not usr in logs:
+				logs[usr] = Log(usr)
+	
+			cmd = ParseCmd(line)
+			# append the command if it isn't there already
+			if cmd is not None:
+				if not cmd in logs[usr].commands:
+					logs[usr].commands.append(cmd)
+			logs[usr].logs.append(line.rstrip('\n'))
 	return logs
