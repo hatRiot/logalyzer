@@ -80,7 +80,7 @@ def ParseLogs(LOG):
 		print '[-] Error opening \'%s\': %s'%(LOG,e)
 		return None
 	finally:
-		f.close()
+		if f is not None: f.close()
 
 	for line in log.split('\n'):
 		# match a login

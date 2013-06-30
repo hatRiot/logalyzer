@@ -51,6 +51,7 @@ if __name__=="__main__":
 
 	# parse logs
 	LOGS = ParseLogs.ParseLogs(log)
+	if LOGS is None: sys.exit(1)
 	
 	# validate the user 
 	if options.user:
